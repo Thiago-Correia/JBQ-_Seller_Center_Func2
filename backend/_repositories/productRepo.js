@@ -2,12 +2,12 @@ const pool = require("../db");
 
 module.exports = {
   async findAll() {
-    const [rows] = await pool.query("SELECT * FROM products");
+    const [rows] = await pool.query("SELECT * FROM produtos");
     return rows;
   },
 
   async findById(id) {
-    const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [
+    const [rows] = await pool.query("SELECT * FROM produtos WHERE id = ?", [
       id,
     ]);
     return rows[0];
@@ -17,7 +17,7 @@ module.exports = {
     const { prd_name, prd_price, prd_stock } = product;
 
     const [result] = await pool.query(
-      "INSERT INTO products (prd_name, prd_price, prd_stock) VALUES (?, ?, ?)",
+      "INSERT INTO produtos (prd_name, prd_price, prd_stock) VALUES (?, ?, ?)",
       [prd_name, prd_price, prd_stock]
     );
 
@@ -31,7 +31,7 @@ module.exports = {
     const { prd_name, prd_price, prd_stock, active } = product;
 
     await pool.query(
-      "UPDATE products SET prd_name = ?, prd_price = ?, prd_stock = ?, is_active = ? WHERE id = ?",
+      "UPDATE produtos SET prd_name = ?, prd_price = ?, prd_stock = ?, is_active = ? WHERE id = ?",
       [prd_name, prd_price, prd_stock, active, id]
     );
 
@@ -39,6 +39,6 @@ module.exports = {
   },
 
   async remove(id) {
-    return pool.query("DELETE FROM products WHERE id = ?", [id]);
+    return pool.query("DELETE FROM produtos WHERE id = ?", [id]);
   },
 };
