@@ -13,15 +13,12 @@ module.exports = {
     return product;
   },
 
-  async createProduct(data) {
-    if (data.price <= 0) {
-      throw new Error("O preço deve ser maior que zero");
+  async listActiveProducts() {
+    const products = await productRepo.findActive();
+    if (!products) {
+      throw new Error("Nenhum produto ativo");
     }
-    if (data.stock < 0) {
-      throw new Error("Estoque não pode ser negativo");
-    }
-
-    return productRepo.create(data);
+    return products;
   },
 
   async updateProduct(id, data) {
@@ -33,12 +30,13 @@ module.exports = {
     return productRepo.update(id, data);
   },
 
-  async deleteProduct(id) {
-    const exists = await productRepo.findById(id);
-    if (!exists) {
-      throw new Error("Produto não encontrado");
+  async deactivateProduct(id) {
+    const result = await productRepo.deactivate(id);
+
+    if (result.affectedRows === 0) {
+      return { sucesso: false, mensagem: "Produto não encontrado." };
     }
 
-    return productRepo.remove(id);
+    return { sucesso: true, mensagem: "Produto excluído" };
   },
 };

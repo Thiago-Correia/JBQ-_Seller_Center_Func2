@@ -15,12 +15,12 @@ module.exports = {
     }
   },
 
-  async create(req, res) {
+  async listActive(req, res) {
     try {
-      const newProduct = await productService.createProduct(req.body);
-      res.status(201).json(newProduct);
+      const product = await productService.listActiveProducts(req.params.id);
+      res.json(product);
     } catch (err) {
-      res.status(400).json({ erro: err.message });
+      res.status(404).json({ erro: err.message });
     }
   },
 
@@ -36,12 +36,20 @@ module.exports = {
     }
   },
 
-  async remove(req, res) {
+  async deactivate(req, res) {
+    const idProduto = req.params.id;
+
     try {
-      await productService.deleteProduct(req.params.id);
-      res.json({ message: "Produto removido com sucesso" });
-    } catch (err) {
-      res.status(404).json({ erro: err.message });
+      const resposta = await productService.deactivateProduct(idProduto);
+
+      if (!resposta.sucesso) {
+        return res.status(404).json({ message: resposta.mensagem });
+      }
+
+      return res.json({ message: resposta.mensagem });
+    } catch (error) {
+      console.error("Erro ao excluir o produto:", error);
+      return res.status(500).json({ message: "Erro interno do servidor." });
     }
   },
 };

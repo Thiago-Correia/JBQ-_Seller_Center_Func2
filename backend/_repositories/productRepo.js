@@ -13,18 +13,11 @@ module.exports = {
     return rows[0];
   },
 
-  async create(product) {
-    const { prd_name, prd_price, prd_stock } = product;
-
-    const [result] = await pool.query(
-      "INSERT INTO produtos (prd_name, prd_price, prd_stock) VALUES (?, ?, ?)",
-      [prd_name, prd_price, prd_stock]
+  async findActive() {
+    const [rows] = await pool.query(
+      "SELECT * FROM produtos WHERE ativo = true"
     );
-
-    return {
-      id: result.insertId,
-      ...product,
-    };
+    return rows;
   },
 
   async update(id, product) {
@@ -38,7 +31,9 @@ module.exports = {
     return { id, ...product };
   },
 
-  async remove(id) {
-    return pool.query("DELETE FROM produtos WHERE id = ?", [id]);
+  async deactivate(id) {
+    const query = "UPDATE produtos SET ativo = false WHERE id = ?";
+    const [result] = await pool.query(query, [id]);
+    return result;
   },
 };
