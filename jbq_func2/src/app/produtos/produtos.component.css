@@ -1,0 +1,101 @@
+/*Reset Básico e Estilo da Página*/
+:host {
+    display: block; /*Garante que o componente se comporta como um container*/
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden; /*Garante que a borda arredondada se aplique ao conteúdo*/
+    text-align: center;
+}
+
+thead {
+    background-color: white;
+}
+
+th {
+    padding: 12px 15px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+th:first-child, td:first-child {
+    border-left: none;
+}
+th:last-child, td:last-child {
+    border-right: none;
+}
+
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+td.dinheiro {
+    font-weight: 500;
+    color: #28a745;
+}
+
+/*Linhas Alternadas*/
+tbody tr:nth-child(odd) {
+    background-color: #f8f9fa;
+}
+tbody tr:hover {
+    background-color: #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+/*Estilo para o bloco @empty*/
+tbody tr td[colspan] {
+    text-align: center;
+    font-style: italic;
+    color: #6c757d;
+    padding: 20px;
+}
+
+.acoes {
+    width: 120px; /*Tamanho fixo*/
+    text-align: center;
+    white-space: nowrap; /* Impede que os botões quebrem a linha */
+}
+.acoes button {
+    padding: 5px 10px;
+    margin: 0 4px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+}
+
+.btn-editar {
+    background-color: #ffc107;
+    color: #333;
+}
+.btn-editar:hover {
+    background-color: #e0a800;
+}
+.btn-excluir {
+    background-color: #dc3545;
+    color: white;
+}
+.btn-excluir:hover {
+    background-color: #c82333;
+}

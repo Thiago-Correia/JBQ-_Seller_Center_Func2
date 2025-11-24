@@ -8,18 +8,14 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("API com Express + MySQL funcionando!");
-});
-
-app.get("/products", async (req, res) => {
-  const [rows] = await pool.query("SELECT * FROM products");
+app.get("/api/produtos", async (req, res) => {
+  const [rows] = await pool.query("SELECT * FROM produtos WHERE ativo = true");
   res.json(rows);
 });
-
-app.get("/products/:id", async (req, res) => {
+/*
+app.get("/produto/:id", async (req, res) => {
   const id = req.params.id;
-  const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [id]);
+  const [rows] = await pool.query("SELECT * FROM produtos WHERE id = ?", [id]);
 
   if (rows.length === 0) {
     return res.status(404).json({ error: "Produto não encontrado" });
@@ -27,12 +23,13 @@ app.get("/products/:id", async (req, res) => {
 
   res.json(rows[0]);
 });
-
-app.post("/products", async (req, res) => {
+*/
+/*
+app.post("/produtos", async (req, res) => {
   const { name, price, stock } = req.body;
 
   const [result] = await pool.query(
-    "INSERT INTO products (prd_name, prd_price, prd_stock) VALUES (?, ?, ?)",
+    "INSERT INTO produtos (prd_name, prd_price, prd_stock) VALUES (?, ?, ?)",
     [name, price, stock]
   );
 
@@ -43,13 +40,14 @@ app.post("/products", async (req, res) => {
     stock,
   });
 });
-
-app.put("/products/:id", async (req, res) => {
+*/
+/*
+app.put("/produto/:id", async (req, res) => {
   const id = req.params.id;
   const { name, price, stock } = req.body;
 
   const [result] = await pool.query(
-    "UPDATE products SET name = ?, price = ?, stock = ? WHERE id = ?",
+    "UPDATE produtos SET name = ?, price = ?, stock = ? WHERE id = ?",
     [name, price, stock, id]
   );
 
@@ -59,17 +57,23 @@ app.put("/products/:id", async (req, res) => {
 
   res.json({ id, name, price, stock });
 });
-
-app.delete("/products/:id", async (req, res) => {
+*/
+/*
+app.delete("/produtos/:id", async (req, res) => {
   const id = req.params.id;
 
-  const [result] = await pool.query("DELETE FROM products WHERE id = ?", [id]);
+  const [result] = await pool.query("DELETE FROM produtos WHERE id = ?", [id]);
 
   if (result.affectedRows === 0) {
     return res.status(404).json({ error: "Produto não encontrado" });
   }
 
   res.json({ message: "Produto removido com sucesso" });
+});
+*/
+
+app.get("/", (req, res) => {
+  res.send("API com Express + MySQL funcionando!");
 });
 
 app.listen(PORT, () => {

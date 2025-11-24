@@ -1,0 +1,36 @@
+<h2>Lista de Produtos</h2>
+
+@if (loading) {
+  <p>Carregando produtos...</p>
+} @else if (error) {
+  <p class="error">Ocorreu um erro: {{ error }}</p>
+} @else if (produtos) {
+  <table class="lista-produtos">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Estoque</th>
+        <th class="acoes"></th>
+        </tr>
+    </thead>
+    <tbody>
+      @for (produto of produtos; track produto.id) {
+        <tr [attr.produto-id]="produto.id">
+          <td>{{ produto.nome }}</td>
+          <td class="dinheiro">R$ {{ produto.preco | currency:'BRL':'':'1.2-2' }}</td>
+          <td>{{ produto.estoque }}</td>
+          <td class="acoes">
+            <button class="btn-editar">Editar</button>
+            <button class="btn-excluir">Excluir</button>
+          </td>
+        </tr>
+      }
+      @empty {
+        <tr>
+          <td colspan="4">Nenhum produto encontrado.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
