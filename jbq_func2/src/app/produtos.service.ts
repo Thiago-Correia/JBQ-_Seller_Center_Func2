@@ -11,4 +11,9 @@ export class ProdutosService {
   getProdutos(): Observable<Produto[]> {
     return this.http.get<Produto[]>('/api/produtos');
   }
+
+  excluirProduto(id: number): Observable<any> { 
+    const body = { ativo: false };
+    return this.http.patch(`/api/produto/excluir/${id}`, body); 
+  }
 }

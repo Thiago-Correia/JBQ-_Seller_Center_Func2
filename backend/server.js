@@ -12,6 +12,25 @@ app.get("/api/produtos", async (req, res) => {
   const [rows] = await pool.query("SELECT * FROM produtos WHERE ativo = true");
   res.json(rows);
 });
+
+app.patch("/api/produto/excluir/:id", async (req, res) => {
+  const idProduto = req.params.id;
+
+  try {
+    const query = "UPDATE produtos SET ativo = false WHERE id = ?";
+    const [rows] = await pool.query(query, [idProduto]); 
+    
+    if (rows.affectedRows > 0) {
+      res.json({ message: "Produto excluido" });
+    } else {
+      res.status(404).json({ message: "Produto não encontrado." });
+    }
+    
+  } catch (error) {
+    console.error("Erro ao excluir o produto: ", error);
+    res.status(500).json({ message: "Erro interno do servidor." });
+  }
+});
 /*
 app.get("/produto/:id", async (req, res) => {
   const id = req.params.id;
@@ -56,19 +75,6 @@ app.put("/produto/:id", async (req, res) => {
   }
 
   res.json({ id, name, price, stock });
-});
-*/
-/*
-app.delete("/produtos/:id", async (req, res) => {
-  const id = req.params.id;
-
-  const [result] = await pool.query("DELETE FROM produtos WHERE id = ?", [id]);
-
-  if (result.affectedRows === 0) {
-    return res.status(404).json({ error: "Produto não encontrado" });
-  }
-
-  res.json({ message: "Produto removido com sucesso" });
 });
 */
 

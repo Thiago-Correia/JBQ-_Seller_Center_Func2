@@ -37,4 +37,21 @@ export class ProdutosComponent implements OnInit {
       }
     });
   }
+
+  onExcluir(id: number, nome: string): void {
+    if (!confirm(`Tem certeza que deseja excluir ${nome}?`)) {
+      return;
+    }
+    this.produtosService.excluirProduto(id).subscribe({
+      next: () => {
+        //Filtrar para excluir o produto em questão
+        this.produtos = this.produtos.filter(p => p.id != id);
+        console.log(`${nome} foi excluído.`);
+      },
+      error: (err: any) => {
+        this.error = `Falha ao excluir ${nome}`;
+        console.error('Erro na exclusão: ', err);
+      }
+    })
+  }
 }
