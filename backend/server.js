@@ -1,10 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./db");
+
+const productRoutes = require("./_routes/productRoutes");
 
 const app = express();
-const PORT = 3000;
-
 app.use(cors());
 app.use(express.json());
 
@@ -77,11 +76,13 @@ app.put("/produto/:id", async (req, res) => {
   res.json({ id, name, price, stock });
 });
 */
+// rotas
+app.use("/api", productRoutes);
 
 app.get("/", (req, res) => {
-  res.send("API com Express + MySQL funcionando!");
+  res.send("API Express + MySQL funcionando!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log("Servidor rodando em http://localhost:3000");
 });
