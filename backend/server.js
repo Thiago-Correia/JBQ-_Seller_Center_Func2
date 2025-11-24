@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // rotas
-app.use("/products", productRoutes);
+app.use("/api", productRoutes);
 
 app.get("/", (req, res) => {
   res.send("API Express + MySQL funcionando!");
