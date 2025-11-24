@@ -22,7 +22,7 @@
           <td>{{ produto.estoque }}</td>
           <td class="acoes">
             <button class="btn-editar">Editar</button>
-            <button class="btn-excluir">Excluir</button>
+            <button class="btn-excluir" (click)="onExcluir(produto.id, produto.nome)">Excluir</button>
           </td>
         </tr>
       }
