@@ -25,14 +25,19 @@ module.exports = {
   },
 
   async update(req, res) {
+    const id = req.params.id;
+    const data = req.body;
     try {
-      const updated = await productService.updateProduct(
-        req.params.id,
-        req.body
-      );
-      res.json(updated);
+      const resposta = await productService.updateProduct(id, data);
+
+      if (!resposta.sucesso) {
+        return res.status(404).json({ message: resposta.mensagem });
+      }
+
+      return res.json({ message: resposta.mensagem });
     } catch (err) {
-      res.status(400).json({ erro: err.message });
+      console.error("Erro ao atualizar produto:", err);
+      return res.status(500).json({ message: "Erro interno do servidor." });
     }
   },
 

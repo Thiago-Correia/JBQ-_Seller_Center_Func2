@@ -22,21 +22,19 @@ module.exports = {
   },
 
   async updateProduct(id, data) {
-    const exists = await productRepo.findById(id);
-    if (!exists) {
-      throw new Error("Produto não encontrado");
+    const { nome, preco, estoque } = data;
+    const result = await productRepo.update(id, nome, preco, estoque);
+    if (result.affectedRows === 0) {
+      return { sucesso: false, mensagem: "Produto não encontrado." };
     }
-
-    return productRepo.update(id, data);
+    return { sucesso: true, mensagem: "Produto atualizado" };
   },
 
   async deactivateProduct(id) {
     const result = await productRepo.deactivate(id);
-
     if (result.affectedRows === 0) {
       return { sucesso: false, mensagem: "Produto não encontrado." };
     }
-
     return { sucesso: true, mensagem: "Produto excluído" };
   },
 };

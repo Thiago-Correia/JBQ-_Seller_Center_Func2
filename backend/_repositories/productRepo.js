@@ -20,20 +20,19 @@ module.exports = {
     return rows;
   },
 
-  async update(id, product) {
-    const { prd_name, prd_price, prd_stock, active } = product;
-
-    await pool.query(
-      "UPDATE produtos SET prd_name = ?, prd_price = ?, prd_stock = ?, is_active = ? WHERE id = ?",
-      [prd_name, prd_price, prd_stock, active, id]
+  async update(id, nome, preco, estoque) {
+    const [result] = await pool.query(
+      `UPDATE produtos SET nome = ?, preco = ?, estoque = ? WHERE id = ?`,
+      [nome, preco, estoque, id]
     );
-
-    return { id, ...product };
+    return result;
   },
 
   async deactivate(id) {
-    const query = "UPDATE produtos SET ativo = false WHERE id = ?";
-    const [result] = await pool.query(query, [id]);
+    const [result] = await pool.query(
+      "UPDATE produtos SET ativo = false WHERE id = ?",
+      [id]
+    );
     return result;
   },
 };
