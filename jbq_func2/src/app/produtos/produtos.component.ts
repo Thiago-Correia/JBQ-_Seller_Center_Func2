@@ -20,6 +20,7 @@ export class ProdutosComponent implements OnInit {
   produtos: Produto[] = [];
   loading: boolean = true;
   error: string | null = null;
+  public editandoId: number | null = null;
 
   //Injeção de dependência:
   constructor(private produtosService: ProdutosService) {}
@@ -34,6 +35,29 @@ export class ProdutosComponent implements OnInit {
         this.error = 'Erro ao carregar os produtos: ' + err.message;
         this.loading = false;
         console.error('Houve um erro na chamada de API:', err);
+      }
+    });
+  } 
+
+  onEditar(produto: Produto): void {
+    //Se já estiver em edição e o botão for clicado: confirmar edição
+    //Se não estiver em edição, habilita edição
+    if (this.editandoId === produto.id) {
+      this.confirmarEdicao(produto);
+    } else {
+      this.editandoId = produto.id;
+    }
+  }
+
+  confirmarEdicao(produto: Produto): void {
+    this.produtosService.atualizarProduto(produto).subscribe({
+      next: (resposta) => {
+        console.log(`${produto.nome} atualizado!`, resposta);
+        this.editandoId = null;
+      },
+      error: (err) => {
+        this.error = `Falha ao atualizar ${produto.nome}.`;
+        console.error('Erro na atualização: ', err);
       }
     });
   }

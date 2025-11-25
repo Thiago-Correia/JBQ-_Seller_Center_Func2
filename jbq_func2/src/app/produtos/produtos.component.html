@@ -17,11 +17,34 @@
     <tbody>
       @for (produto of produtos; track produto.id) {
         <tr [attr.produto-id]="produto.id">
-          <td>{{ produto.nome }}</td>
-          <td class="dinheiro">R$ {{ produto.preco | currency:'BRL':'':'1.2-2' }}</td>
-          <td>{{ produto.estoque }}</td>
-          <td class="acoes">
-            <button class="btn-editar">Editar</button>
+          <td>
+            @if (editandoId === produto.id) {
+              <input type="text" [value]="produto.nome" (input)="produto.nome = $event.target.value">
+            } @else {
+              {{ produto.nome }}
+            }
+          </td>
+      
+          <td>
+            @if (editandoId === produto.id) {
+              <input type="number" [value]="produto.preco" (input)="produto.preco = +$event.target.value">
+            } @else {
+              {{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}
+            }
+          </td>
+      
+          <td>
+            @if (editandoId === produto.id) {
+              <input type="number" [value]="produto.estoque" (input)="produto.estoque = +$event.target.value">
+            } @else {
+              {{ produto.estoque }}
+            }
+          </td>
+
+          <td class="acoes"> 
+            <button class="btn-editar" (click)="onEditar(produto)">
+              @if (editandoId === produto.id) { Confirmar } @else { Editar }
+            </button>
             <button class="btn-excluir" (click)="onExcluir(produto.id, produto.nome)">Excluir</button>
           </td>
         </tr>
