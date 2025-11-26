@@ -92,10 +92,10 @@ tbody tr td[colspan] {
 .btn-editar:hover {
     background-color: #e0a800;
 }
-.btn-excluir {
+.btn-excluir, .btn-cancelar {
     background-color: #dc3545;
     color: white;
 }
-.btn-excluir:hover {
+.btn-excluir:hover, .btn-cancelar:hover {
     background-color: #c82333;
 }
