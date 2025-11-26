@@ -1,6 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common'; 
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProdutosService } from '../produtos.service';
 import { Produto } from './produtos.interface';
 
@@ -12,7 +13,8 @@ import { Produto } from './produtos.interface';
   standalone: true,
   imports: [
     CommonModule,
-    CurrencyPipe
+    CurrencyPipe,
+    FormsModule
   ] 
 })
 
@@ -20,9 +22,11 @@ export class ProdutosComponent implements OnInit {
   produtos: Produto[] = [];
   loading: boolean = true;
   error: string | null = null;
-  public editandoId: number | null = null;
 
-  //Injeção de dependência:
+  public editandoId: number | null = null;
+  private produtoOriginal: Produto | null = null;
+  public mudancasPendentes: boolean = false;
+
   constructor(private produtosService: ProdutosService) {}
 
   ngOnInit(): void {
@@ -40,42 +44,70 @@ export class ProdutosComponent implements OnInit {
   } 
 
   onEditar(produto: Produto): void {
-    //Se já estiver em edição e o botão for clicado: confirmar edição
-    //Se não estiver em edição, habilita edição
-    if (this.editandoId === produto.id) {
+    if (!this.produtoOriginal) {
+      this.produtoOriginal = { ...produto };
+      this.editandoId = produto.id;
+      this.mudancasPendentes = false;
+    } else if (this.editandoId === produto.id) {
       this.confirmarEdicao(produto);
     } else {
-      this.editandoId = produto.id;
+      return;
     }
   }
 
   confirmarEdicao(produto: Produto): void {
     this.produtosService.atualizarProduto(produto).subscribe({
-      next: (resposta) => {
-        console.log(`${produto.nome} atualizado!`, resposta);
+      next: () => {
         this.editandoId = null;
+        this.produtoOriginal = null;
+        this.mudancasPendentes = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = `Falha ao atualizar ${produto.nome}.`;
-        console.error('Erro na atualização: ', err);
       }
     });
   }
 
-  onExcluir(id: number, nome: string): void {
-    if (!confirm(`Tem certeza que deseja excluir ${nome}?`)) {
-      return;
-    }
-    this.produtosService.excluirProduto(id).subscribe({
-      next: () => {
-        //Filtrar para excluir o produto em questão
-        this.produtos = this.produtos.filter(p => p.id != id);
-        console.log(`${nome} foi excluído.`);
-      },
-      error: (err: any) => {
-        this.error = `Falha ao excluir ${nome}`;
-        console.error('Erro na exclusão: ', err);
+  onExcluir(produto: Produto): void {
+    if (!this.produtoOriginal) {
+      if (!confirm(`Tem certeza que deseja excluir ${produto.nome}?`)) {
+        return;
       }
-    })
+      this.produtosService.excluirProduto(produto.id).subscribe({
+        next: () => {
+          //Filtrar para excluir o produto em questão
+          this.produtos = this.produtos.filter(p => p.id != produto.id);
+        },
+        error: () => {
+          this.error = `Falha ao excluir ${produto.nome}`;
+        }
+      })
+    }
+  }
+
+  onCancelarEdicao(produto: Produto): void {
+    if (this.produtoOriginal) {
+      Object.assign(produto, this.produtoOriginal);
+    }
+    this.editandoId = null; 
+    this.produtoOriginal = null;
+    this.mudancasPendentes = false;
+  }
+
+  onInputNovo(produto: Produto): void {
+    if (!this.produtoOriginal) {
+      this.mudancasPendentes = false;
+    } else {
+      this.mudancasPendentes = !this.compararProdutos(produto, this.produtoOriginal);
+    }
+  }
+
+  compararProdutos(produtoA: Produto, produtoB: Produto): boolean {
+    const { id: idA, ...restA } = produtoA;
+    const { id: idB, ...restB } = produtoB;
+    const jsonProdutoA = JSON.stringify(restA, Object.keys(restA).sort());
+    const jsonProdutoB = JSON.stringify(restB, Object.keys(restB).sort());
+
+    return jsonProdutoA === jsonProdutoB;
   }
 }

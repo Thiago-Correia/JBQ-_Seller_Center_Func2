@@ -19,7 +19,7 @@
         <tr [attr.produto-id]="produto.id">
           <td>
             @if (editandoId === produto.id) {
-              <input type="text" [value]="produto.nome" (input)="produto.nome = $event.target.value">
+              <input type="text" [(ngModel)]="produto.nome" (ngModelChange)="onInputNovo(produto)">
             } @else {
               {{ produto.nome }}
             }
@@ -27,7 +27,7 @@
       
           <td>
             @if (editandoId === produto.id) {
-              <input type="number" [value]="produto.preco" (input)="produto.preco = +$event.target.value">
+              <input type="number" [(ngModel)]="produto.preco" (ngModelChange)="onInputNovo(produto)">
             } @else {
               {{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}
             }
@@ -35,17 +35,20 @@
       
           <td>
             @if (editandoId === produto.id) {
-              <input type="number" [value]="produto.estoque" (input)="produto.estoque = +$event.target.value">
+              <input type="number" [(ngModel)]="produto.estoque" (ngModelChange)="onInputNovo(produto)">
             } @else {
               {{ produto.estoque }}
             }
           </td>
 
           <td class="acoes"> 
-            <button class="btn-editar" (click)="onEditar(produto)">
-              @if (editandoId === produto.id) { Confirmar } @else { Editar }
-            </button>
-            <button class="btn-excluir" (click)="onExcluir(produto.id, produto.nome)">Excluir</button>
+              @if (editandoId === produto.id) {
+                <button class="btn-editar" (click)="onEditar(produto)">Confirmar</button>
+                <button class="btn-cancelar" (click)="onCancelarEdicao(produto)">Cancelar</button>
+              } @else { 
+                <button class="btn-editar" (click)="onEditar(produto)">Editar</button>
+                <button class="btn-excluir" (click)="onExcluir(produto)">Excluir</button>
+              }
           </td>
         </tr>
       }
