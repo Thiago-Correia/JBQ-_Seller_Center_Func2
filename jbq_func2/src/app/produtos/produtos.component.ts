@@ -44,7 +44,7 @@ export class ProdutosComponent implements OnInit {
   } 
 
   onEditar(produto: Produto): void {
-    if (!this.produtoOriginal) {
+    if (!this.produtoOriginal || !this.mudancasPendentes) {
       this.produtoOriginal = { ...produto };
       this.editandoId = produto.id;
       this.mudancasPendentes = false;
@@ -69,7 +69,7 @@ export class ProdutosComponent implements OnInit {
   }
 
   onExcluir(produto: Produto): void {
-    if (!this.produtoOriginal) {
+    if (!this.produtoOriginal || !this.mudancasPendentes) {
       if (!confirm(`Tem certeza que deseja excluir ${produto.nome}?`)) {
         return;
       }
