@@ -37,4 +37,23 @@ module.exports = {
     }
     return { sucesso: true, mensagem: "Produto excluído" };
   },
+ async deleteMultipleProducts(ids) {
+    if (!ids || ids.length === 0) {
+        throw new Error("Nenhum produto selecionado");
+    }
+
+    const result = await productRepo.deleteMany(ids);
+
+    return {
+        requested: ids.length,
+        deleted: result.affected,
+        failed: ids.length - result.affected,
+        message:
+            result.affected === ids.length
+                ? "Todos os produtos foram removidos com sucesso"
+                : `Alguns produtos não puderam ser removidos.`
+    };
+}
+
+
 };
