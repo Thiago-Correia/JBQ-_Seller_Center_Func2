@@ -1,145 +1,156 @@
-
-import { Component, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProdutosService } from '../produtos.service';
 import { Produto } from './produtos.interface';
 
-
 @Component({
   selector: 'app-produtos',
-    templateUrl: './produtos.component.html',
-      styleUrls: ['./produtos.component.css'],
-        standalone: true,
-          imports: [
-              CommonModule,
-                  CurrencyPipe,
-                      FormsModule
-                        ] 
-                        })
+  templateUrl: './produtos.component.html',
+  styleUrls: ['./produtos.component.css'],
+  standalone: true,
+  imports: [CommonModule, CurrencyPipe, FormsModule],
+})
+export class ProdutosComponent implements OnInit {
+  produtos: Produto[] = [];
+  loading: boolean = true;
+  error: string | null = null;
 
-                        export class ProdutosComponent implements OnInit {
-                          produtos: Produto[] = [];
-                            loading: boolean = true;
-                              error: string | null = null;
+  public editandoId: number | null = null;
+  private produtoOriginal: Produto | null = null;
+  public mudancasPendentes: boolean = false;
 
-                                public editandoId: number | null = null;
-                                  private produtoOriginal: Produto | null = null;
-                                    public mudancasPendentes: boolean = false;
+  constructor(private produtosService: ProdutosService) {}
 
-                                      constructor(private produtosService: ProdutosService) {}
+  ngOnInit(): void {
+    this.produtosService.getProdutos().subscribe({
+      next: (data) => {
+        this.produtos = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Erro ao carregar os produtos: ' + err.message;
+        this.loading = false;
+        console.error('Houve um erro na chamada de API:', err);
+      },
+    });
+  }
 
-                                        ngOnInit(): void {
-                                            this.produtosService.getProdutos().subscribe({
-                                                  next: (data) => {
-                                                          this.produtos = data;
-                                                                  this.loading = false;
-                                                                        },
-                                                                              error: (err) => {
-                                                                                      this.error = 'Erro ao carregar os produtos: ' + err.message;
-                                                                                              this.loading = false;
-                                                                                                      console.error('Houve um erro na chamada de API:', err);
-                                                                                                            }
-                                                                                                                });
-                                                                                                                  } 
+  onEditar(produto: Produto): void {
+    if (!this.produtoOriginal || !this.mudancasPendentes) {
+      this.produtoOriginal = { ...produto };
+      this.editandoId = produto.id;
+      this.mudancasPendentes = false;
+    } else if (this.editandoId === produto.id) {
+      this.confirmarEdicao(produto);
+    } else {
+      return;
+    }
+  }
 
-                                                                                                                    onEditar(produto: Produto): void {
-                                                                                                                        if (!this.produtoOriginal || !this.mudancasPendentes) {
-                                                                                                                              this.produtoOriginal = { ...produto };
-                                                                                                                                    this.editandoId = produto.id;
-                                                                                                                                          this.mudancasPendentes = false;
-                                                                                                                                              } else if (this.editandoId === produto.id) {
-                                                                                                                                                    this.confirmarEdicao(produto);
-                                                                                                                                                        } else {
-                                                                                                                                                              return;
-                                                                                                                                                                  }
-                                                                                                                                                                    }
+  confirmarEdicao(produto: Produto): void {
+    this.produtosService.atualizarProduto(produto).subscribe({
+      next: () => {
+        this.editandoId = null;
+        this.produtoOriginal = null;
+        this.mudancasPendentes = false;
+      },
+      error: () => {
+        this.error = `Falha ao atualizar ${produto.nome}.`;
+      },
+    });
+  }
+  // Task 4 - Exclusão múltipla
+  selecionados: number[] = [];
+  // Task 4 - Marcar e desmarcar produtos
+  toggleSelecionado(id: number, event: any): void {
+    if (event.target.checked) {
+      this.selecionados.push(id);
+    } else {
+      this.selecionados = this.selecionados.filter((x) => x !== id);
+    }
+  }
+  toggleItem(id: number): void {
+    if (this.selecionados.includes(id)) {
+      this.selecionados = this.selecionados.filter((x) => x !== id);
+    } else {
+      this.selecionados.push(id);
+    }
+  }
+  toggleTodos(event: any): void {
+    const marcado = event.target.checked;
 
-                                                                                                                                                                      confirmarEdicao(produto: Produto): void {
-                                                                                                                                                                          this.produtosService.atualizarProduto(produto).subscribe({
-                                                                                                                                                                                next: () => {
-                                                                                                                                                                                        this.editandoId = null;
-                                                                                                                                                                                                this.produtoOriginal = null;
-                                                                                                                                                                                                        this.mudancasPendentes = false;
-                                                                                                                                                                                                              },
-                                                                                                                                                                                                                    error: () => {
-                                                                                                                                                                                                                            this.error = `Falha ao atualizar ${produto.nome}.`;
-                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                                      });
-                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                          // Task 4 - Exclusão múltipla
-                                                                                                                                                                                                                                          selecionados: number[] = [];
-                                                                                                                                                                                                                                          // Task 4 - Marcar e desmarcar produtos
-                                                                                                                                                                                                                                          toggleSelecionado(id: number, event: any): void {
-                                                                                                                                                                                                                                            if (event.target.checked) {
-                                                                                                                                                                                                                                                this.selecionados.push(id);
-                                                                                                                                                                                                                                                  } else {
-                                                                                                                                                                                                                                                      this.selecionados = this.selecionados.filter(x => x !== id);
-                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                                        // Task 4 - Excluir produtos selecionados
-                                                                                                                                                                                                                                                        excluirSelecionados(): void {
-                                                                                                                                                                                                                                                          if (this.selecionados.length === 0) {
-                                                                                                                                                                                                                                                              alert("Nenhum produto selecionado.");
-                                                                                                                                                                                                                                                                  return;
-                                                                                                                                                                                                                                                                    }
+    if (marcado) {
+      // Selecionar todos os IDs
+      this.selecionados = this.produtos.map((p) => p.id);
+    } else {
+      // Desmarcar todos
+      this.selecionados = [];
+    }
+  }
 
-                                                                                                                                                                                                                                                                      if (!confirm(`Deseja realmente excluir ${this.selecionados.length} produto(s)?`)) {
-                                                                                                                                                                                                                                                                          return;
-                                                                                                                                                                                                                                                                            }
+  // Task 4 - Excluir produtos selecionados
+  excluirSelecionados(): void {
+    if (this.selecionados.length === 0) {
+      alert('Nenhum produto selecionado.');
+      return;
+    }
 
-                                                                                                                                                                                                                                                                              this.produtosService.excluirVariosProdutos(this.selecionados).subscribe({
-                                                                                                                                                                                                                                                                                  next: () => {
-                                                                                                                                                                                                                                                                                        this.produtos = this.produtos.filter(p => !this.selecionados.includes(p.id));
-                                                                                                                                                                                                                                                                                              this.selecionados = [];
-                                                                                                                                                                                                                                                                                                  },
-                                                                                                                                                                                                                                                                                                      error: () => {
-                                                                                                                                                                                                                                                                                                            this.error = "Falha ao excluir os produtos selecionados.";
-                                                                                                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                                                                                                  });
-                                                                                                                                                                                                                                                                                                                  }
+    if (!confirm(`Deseja realmente excluir ${this.selecionados.length} produto(s)?`)) {
+      return;
+    }
 
+    this.produtosService.excluirVariosProdutos(this.selecionados).subscribe({
+      next: () => {
+        this.produtos = this.produtos.filter((p) => !this.selecionados.includes(p.id));
+        this.selecionados = [];
+      },
+      error: () => {
+        this.error = 'Falha ao excluir os produtos selecionados.';
+      },
+    });
+  }
 
-                                                                                                                                                                                                                                                                                                                    onExcluir(produto: Produto): void {
-                                                                                                                                                                                                                                                                                                                        if (!this.produtoOriginal || !this.mudancasPendentes) {
-                                                                                                                                                                                                                                                                                                                              if (!confirm(`Tem certeza que deseja excluir ${produto.nome}?`)) {
-                                                                                                                                                                                                                                                                                                                                      return;
-                                                                                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                                                                                  this.produtosService.excluirProduto(produto.id).subscribe({
-                                                                                                                                                                                                                                                                                                                                                          next: () => {
-                                                                                                                                                                                                                                                                                                                                                                    //Filtrar para excluir o produto em questão
-                                                                                                                                                                                                                                                                                                                                                                              this.produtos = this.produtos.filter(p => p.id != produto.id);
-                                                                                                                                                                                                                                                                                                                                                                                      },
-                                                                                                                                                                                                                                                                                                                                                                                              error: () => {
-                                                                                                                                                                                                                                                                                                                                                                                                        this.error = `Falha ao excluir ${produto.nome}`;
-                                                                                                                                                                                                                                                                                                                                                                                                                }
-                                                                                                                                                                                                                                                                                                                                                                                                                      })
-                                                                                                                                                                                                                                                                                                                                                                                                                          }
-                                                                                                                                                                                                                                                                                                                                                                                                                            }
+  onExcluir(produto: Produto): void {
+    if (!this.produtoOriginal || !this.mudancasPendentes) {
+      if (!confirm(`Tem certeza que deseja excluir ${produto.nome}?`)) {
+        return;
+      }
+      this.produtosService.excluirProduto(produto.id).subscribe({
+        next: () => {
+          //Filtrar para excluir o produto em questão
+          this.produtos = this.produtos.filter((p) => p.id != produto.id);
+        },
+        error: () => {
+          this.error = `Falha ao excluir ${produto.nome}`;
+        },
+      });
+    }
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                              onCancelarEdicao(produto: Produto): void {
-                                                                                                                                                                                                                                                                                                                                                                                                                                  if (this.produtoOriginal) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                        Object.assign(produto, this.produtoOriginal);
-                                                                                                                                                                                                                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                this.editandoId = null; 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    this.produtoOriginal = null;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        this.mudancasPendentes = false;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                          }
+  onCancelarEdicao(produto: Produto): void {
+    if (this.produtoOriginal) {
+      Object.assign(produto, this.produtoOriginal);
+    }
+    this.editandoId = null;
+    this.produtoOriginal = null;
+    this.mudancasPendentes = false;
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            onInputNovo(produto: Produto): void {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                if (!this.produtoOriginal) {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                      this.mudancasPendentes = false;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                          } else {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                this.mudancasPendentes = !this.compararProdutos(produto, this.produtoOriginal);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      }
+  onInputNovo(produto: Produto): void {
+    if (!this.produtoOriginal) {
+      this.mudancasPendentes = false;
+    } else {
+      this.mudancasPendentes = !this.compararProdutos(produto, this.produtoOriginal);
+    }
+  }
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        compararProdutos(produtoA: Produto, produtoB: Produto): boolean {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            const { id: idA, ...restA } = produtoA;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                const { id: idB, ...restB } = produtoB;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    const jsonProdutoA = JSON.stringify(restA, Object.keys(restA).sort());
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        const jsonProdutoB = JSON.stringify(restB, Object.keys(restB).sort());
+  compararProdutos(produtoA: Produto, produtoB: Produto): boolean {
+    const { id: idA, ...restA } = produtoA;
+    const { id: idB, ...restB } = produtoB;
+    const jsonProdutoA = JSON.stringify(restA, Object.keys(restA).sort());
+    const jsonProdutoB = JSON.stringify(restB, Object.keys(restB).sort());
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            return jsonProdutoA === jsonProdutoB;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              }
+    return jsonProdutoA === jsonProdutoB;
+  }
+}

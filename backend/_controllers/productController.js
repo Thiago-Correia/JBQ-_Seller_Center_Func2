@@ -57,16 +57,15 @@ module.exports = {
       return res.status(500).json({ message: "Erro interno do servidor." });
     }
   },
+
   async deleteMany(req, res) {
     try {
-        const ids = req.body.ids;
-        const result = await productService.deleteMultipleProducts(ids);
+      const ids = req.body.ids;
+      const result = await productService.deleteMultipleProducts(ids);
 
-        return res.status(200).json(result);
+      return res.status(200).json(result);
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
-}
-
-
+  },
 };

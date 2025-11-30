@@ -35,11 +35,10 @@ module.exports = {
     );
     return result;
   },
- async deleteMany(ids) {
-    const sql = `DELETE FROM products WHERE id IN (?)`;
-    const [result] = await db.query(sql, [ids]);
+
+  async deleteMany(ids) {
+    const sql = `UPDATE produtos SET ativo = false WHERE id IN (?)`;
+    const [result] = await pool.query(sql, [ids]);
     return { affected: result.affectedRows };
-}
-
-
+  },
 };
