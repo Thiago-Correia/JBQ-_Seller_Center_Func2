@@ -26,7 +26,7 @@ Para rodar o projeto, você precisa ter instalado:
 Use o arquivo.sql para criar o banco de dados
 
 
-#Como rodar no Backend (Node.js)
+# Como rodar no Backend (Node.js)
 
 
 Antes de rodar o backend, é obrigatório editar o arquivo:
@@ -51,7 +51,7 @@ node server.js
  ```
 O servidor iniciará na porta configurada (padrão: 3000).
 
-#Como rodar o Frontend (Angular)
+# Como rodar o Frontend (Angular)
 
 No terminal, dentro da pasta frontend, execute:
  ```bash
