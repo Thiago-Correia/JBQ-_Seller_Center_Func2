@@ -13,11 +13,12 @@ Para rodar o projeto, você precisa ter instalado:
 
 - **Node.js** (versão LTS recomendada)  
 - **Angular CLI**
-- **MySQL*** (De preferencia MySQLWorkbench)
 
   ```bash
   npm install -g @angular/cli
   ```
+- **MySQL** (De preferencia MySQLWorkbench)
+
 - Um editor de código, como VSCode
   
 # Configuração do Banco de Dados
