@@ -5,18 +5,35 @@
 } @else if (error) {
   <p class="error">Ocorreu um erro: {{ error }}</p>
 } @else if (produtos) {
+
+  <!-- 🔥 Botão aparece apenas se houver algum item selecionado -->
+  <div class="acoes-multiplas" *ngIf="selecionados.length > 0">
+    <button class="btn-excluir-multiplos" (click)="onExcluirSelecionados()">Excluir Selecionados ({{ selecionados.length }})</button>
+  </div>
+
   <table class="lista-produtos">
     <thead>
       <tr>
+        <!-- 🔹 Checkbox master -->
+        <th><input type="checkbox" (change)="toggleTodos($event)"></th>
         <th>Nome</th>
         <th>Preço</th>
         <th>Estoque</th>
         <th class="acoes"></th>
-        </tr>
+      </tr>
     </thead>
+
     <tbody>
       @for (produto of produtos; track produto.id) {
         <tr [attr.produto-id]="produto.id">
+
+          <!-- 🔹 Checkbox individual -->
+          <td>
+            <input type="checkbox"
+                   [checked]="selecionados.includes(produto.id)"
+                   (change)="toggleItem(produto.id)">
+          </td>
+
           <td>
             @if (editandoId === produto.id) {
               <input type="text" [(ngModel)]="produto.nome" (ngModelChange)="onInputNovo(produto)">
@@ -24,7 +41,7 @@
               {{ produto.nome }}
             }
           </td>
-      
+
           <td>
             @if (editandoId === produto.id) {
               <input type="number" [(ngModel)]="produto.preco" (ngModelChange)="onInputNovo(produto)">
@@ -32,7 +49,7 @@
               {{ produto.preco | currency:'BRL':'symbol':'1.2-2' }}
             }
           </td>
-      
+
           <td>
             @if (editandoId === produto.id) {
               <input type="number" [(ngModel)]="produto.estoque" (ngModelChange)="onInputNovo(produto)">
@@ -41,20 +58,21 @@
             }
           </td>
 
-          <td class="acoes"> 
-              @if (editandoId === produto.id) {
-                <button class="btn-editar" (click)="onEditar(produto)">Confirmar</button>
-                <button class="btn-cancelar" (click)="onCancelarEdicao(produto)">Cancelar</button>
-              } @else { 
-                <button class="btn-editar" (click)="onEditar(produto)">Editar</button>
-                <button class="btn-excluir" (click)="onExcluir(produto)">Excluir</button>
-              }
+          <td class="acoes">
+            @if (editandoId === produto.id) {
+              <button class="btn-editar" (click)="onEditar(produto)">Confirmar</button>
+              <button class="btn-cancelar" (click)="onCancelarEdicao(produto)">Cancelar</button>
+            } @else {
+              <button class="btn-editar" (click)="onEditar(produto)">Editar</button>
+              <button class="btn-excluir" (click)="onExcluir(produto)">Excluir</button>
+            }
           </td>
         </tr>
       }
+
       @empty {
         <tr>
-          <td colspan="4">Nenhum produto encontrado.</td>
+          <td colspan="5">Nenhum produto encontrado.</td>
         </tr>
       }
     </tbody>

@@ -21,4 +21,12 @@ export class ProdutosService {
     const body = { ativo: false };
     return this.http.patch(`/api/produtos/excluir/${id}`, body);
   }
+ //exclui múltiplos produtos definindo o campo "ativo" como falso no banco.
+
+excluirVariosProdutos(ids: number[]): Observable<any> {
+  const body = { ids, ativo: false };
+
+  return this.http.patch(`/api/produtos/excluir-varios`, body);
+}
+
 }
